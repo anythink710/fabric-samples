@@ -11,6 +11,8 @@ CHANNEL_NAME=mychannel
 # remove previous crypto material and config transactions
 rm -fr config/*
 rm -fr crypto-config/*
+mkdir config
+mkdir crypto-config
 
 # generate crypto material
 cryptogen generate --config=./crypto-config.yaml
@@ -39,3 +41,8 @@ if [ "$?" -ne 0 ]; then
   echo "Failed to generate anchor peer update for Org1MSP..."
   exit 1
 fi
+
+# update CA key to .env file.
+KEY_ORG1_CA=$(find ./crypto-config/peerOrganizations/org1.example.com/ca/ -name *_sk -printf "%f\n")
+sed -i "s/KEY_ORG1_CA=.*/KEY_ORG1_CA=$KEY_ORG1_CA/g" .env
+
